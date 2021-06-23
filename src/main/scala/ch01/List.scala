@@ -77,5 +77,29 @@ object List {
       case Cons(head, tail) => f(head, foldRight(tail, init)(f))
   }
 
+  def foldLeft[A, B](ls: List[A], init: B)(f: (B, A) => B): B = ls match {
+    case Nil => init
+    case Cons(head, tail) => foldLeft(tail, f(init, head))(f)
+  }
+
+  def reverse[A](ls: List[A]): List[A] = foldLeft(ls, List[A]())((x, y) => Cons(y, x))
+
+  def append[A](ls: List[A], lt: List[A]): List[A] = 
+    foldRight(ls, lt)((x, y) => Cons(x, y))
+
+  def map[A, B](ls: List[A])(f: A => B): List[B] = foldRight(ls, List[B]())((x, y) => Cons(f(x), y))
+
+  def filter[A](ls: List[A])(f: A => Boolean): List[A] = foldRight(ls, List[A]())((x, y) => if (f(x)) Cons(x, y) else y)
+
+  def flatMap[A, B](ls: List[A])(f: A => List[B]): List[B] = foldRight(ls, List[B]())((x, y) => append(f(x), y))
+
+  def filterUsingFlatMap[A](ls: List[A])(f: A => Boolean): List[A] = flatMap(ls)(x => if (f(x)) List(x) else List())
+
+  def zip[A](ls: List[A], lt: List[A])(f: (A, A) => A): List[A] = (ls, lt) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(head1, tail1), Cons(head2, tail2)) => Cons(f(head1, head2), zip(tail1, tail2)(f))
+  }
+
   def length[A](ls: List[A]): Int = foldRight(ls, 0)((_, acc) => 1 + acc)
  }
