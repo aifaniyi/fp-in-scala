@@ -25,6 +25,23 @@ sealed trait Stream[+A] {
         case Cons(head, tail) if (p(head())) => Stream.cons(head(), tail() takeWhile p)
         case _ => Stream.empty
     }
+
+    def foldRight[B](init: => B)(f: (A, => B) => B): B = this match {
+        case Cons(head, tail) => f(head(), tail().foldRight(init)(f))
+        case _ => init
+    }
+
+    def exists(f: A => Boolean): Boolean =
+        foldRight(false)((a, b) => f(a) || b)
+
+    def forAll(f: A => Boolean): Boolean = 
+        foldRight(true)((a, b) => f(a) && b) 
+
+    def takeWhileWithFold(f: A => Boolean): Stream[A] = 
+        foldRight(Stream.empty[A])((a, b) => {
+            if (f(a)) Stream.cons(a, b)
+            else Stream.empty
+        }) 
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](head: () => A, tail: () => Stream[A]) extends Stream[A]

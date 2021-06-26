@@ -19,5 +19,10 @@ object Ch05 {
         println(s"""
         Exercise 5.3: takeWhile predicate function is true
         takeWhile(_<5) = ${stream.takeWhile(_ < 5).toList}""")
+
+        println(s"""
+        Exercise 5.4: test if all elements satisfy condition 
+        forAll(_<10) = ${stream.forAll(_ < 10)}
+        forAll(_<5) = ${stream.forAll(_ < 5)}""")
     }
 }
